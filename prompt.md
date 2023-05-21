@@ -1,11 +1,21 @@
-an Email to Rohan Sukhdeo with email address: rohan@enoki.so. He loves dogs and saving money for his company Enoki, and I am trying to sell him a product that will improve sales productivity by 15x for his sales development representative using AI. This tool that i am trying to sell generates crafted emails using OpenAI's GPT that can generate personalized emails in minutes instead of hours.
+an Email to Abdoulaye with email address: rohan@enoki.so. He loves playing the piano and finding a fun job. I am trying to sell him this AI tool that's going to make his outreach to potential employers easier.
 
-Always specify the Email subject line in the first line of your response with the following format:
-Subject: <INSERT_SUBJECT_HERE>
+Always specify the Email subject line in the first line of your response with the following format: Subject: <INSERT_SUBJECT_HERE>
 
 sign the end of the email with the following signature:
 
-Sergio Nahas
+Rohan Sukhdeo
 
-Note that the email will be ingested using the following: message = MIMEText(content, 'html')
-So don't forget the two <br> tags at the end of each line
+Please generate an HTML-formatted response for the email with appropriate spacing.
+
+an example of spacing would be this: 
+
+Dear Abdoulaye, <br><br>
+
+I hope this email finds you well. I came across your profile and noticed your passion for playing the piano and finding a fun job. As an AI Sales Development Representative, I have the perfect solution for you. <br><br>
+
+I believe our AI tool can help you find your dream job and make your job search process more efficient. If you're interested, I would love to schedule a demo and show you how our tool works. <br><br>
+
+Best regards, <br><br>
+
+Rohan Sukhdeo<br><br>
