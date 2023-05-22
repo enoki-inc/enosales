@@ -94,6 +94,27 @@ def stripper(email_text):
     content = '\n'.join(lines[2:]).strip()
     return subject, content
 
+def generate_sales_prompt(data):
+    email = data["email"]
+    context = data["context"]
+    sell_product = data["sell_product"]
+    example_emails = data["example_emails"]
+    
+    prompt = f"The email address is {email}. \
+               Here is the context: {context}. \
+               This is what I am trying to sell: {sell_product} \
+               Here are examples of emails that have been successful at getting replies: {example_emails}. \
+               Always specify the Email subject line in the first line of your response with the following format: Subject: <INSERT_SUBJECT_HERE>. \
+               an example of spacing would be this: \
+               Dear Bob, <br><br> \
+               I hope this email finds you well. \
+               I came across your profile and noticed your passion for playing the piano and finding a fun job. As an AI Sales Development Representative, I have the perfect solution for you. <br><br> \
+               I believe our AI tool can help you find your dream job and make your job search process more efficient. If you're interested, I would love to schedule a demo and show you how our tool works. <br><br> \
+               Best regards, <br><br> \
+               Steve Joseph <br><br>"
+    
+    return prompt
+
 @app.post("/email/send")
 def send_email(request: EmailRequest):
     try:
