@@ -16,6 +16,12 @@ class EmailRequest(BaseModel):
     recipient: str
     prompt: str
 
+class SalesData(BaseModel):
+    email: str
+    context: str
+    sell_product: str
+    example_emails: str
+    
 def generate_response(system_prompt, user_prompt, *args):
     import openai
     import tiktoken
@@ -95,10 +101,10 @@ def stripper(email_text):
     return subject, content
 
 def generate_sales_prompt(data):
-    email = data["email_address"]
-    context = data["context"]
-    sell_product = data["sell_product"]
-    example_emails = data["example_emails"]
+    email = data.email_address
+    context = data.context
+    sell_product = data.sell_product
+    example_emails = data.example_emails
     
     prompt = f"The email address is {email_address}. \
                Here is the context: {context}. \
@@ -116,13 +122,13 @@ def generate_sales_prompt(data):
     return prompt
 
 @app.post("/sales/generate")
-def generate_sales_response(sales_data):
+def generate_sales_response(sales_data: SalesData):
     prompt = generate_sales_prompt(sales_data)
     response = generate_response(
         """You are an AI Sales Development Representative who is trying to write a personalized sales email for the user based on their intent.""",
         prompt,
     )
-    return {"email": response, "email_address": sales_data["email_address"]}
+    return {"email": response, "email_address": sales_data.email_address}
        
 @app.post("/sales/send")
 def send_email(reply_dict):
