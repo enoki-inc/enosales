@@ -95,12 +95,12 @@ def stripper(email_text):
     return subject, content
 
 def generate_sales_prompt(data):
-    email = data["email"]
+    email = data["email_address"]
     context = data["context"]
     sell_product = data["sell_product"]
     example_emails = data["example_emails"]
     
-    prompt = f"The email address is {email}. \
+    prompt = f"The email address is {email_address}. \
                Here is the context: {context}. \
                This is what I am trying to sell: {sell_product} \
                Here are examples of emails that have been successful at getting replies: {example_emails}. \
@@ -115,15 +115,20 @@ def generate_sales_prompt(data):
     
     return prompt
 
-@app.post("/email/send")
-def send_email(request: EmailRequest):
+@app.post("/sales/generate")
+def generate_sales_response(sales_data):
+    prompt = generate_sales_prompt(sales_data)
+    response = generate_response(
+        """You are an AI Sales Development Representative who is trying to write a personalized sales email for the user based on their intent.""",
+        prompt,
+    )
+    return {"email": response, "email_address": sales_data["email_address"]}
+       
+@app.post("/sales/send")
+def send_email(reply_dict):
     try:
-        email = generate_response(
-            """You are an AI Sales Development Representative who is trying to write a personalized sales email for the user based on their intent.""",
-            request.prompt,
-        )
-        subject, content = stripper(email)
-        mail_sender(request.recipient, subject, content)
+        subject, content = stripper(reply_dict["email"])
+        mail_sender(reply_dict["email_address"], subject, content)
         return {"message": "Email sent successfully"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
