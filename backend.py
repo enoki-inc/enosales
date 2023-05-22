@@ -21,6 +21,10 @@ class SalesData(BaseModel):
     context: str
     sell_product: str
     example_emails: str
+
+class ReplyData(BaseModel):
+    email: str
+    email_address: str
     
 def generate_response(system_prompt, user_prompt, *args):
     import openai
@@ -131,10 +135,10 @@ def generate_sales_response(sales_data: SalesData):
     return {"email": response, "email_address": sales_data.email_address}
        
 @app.post("/sales/send")
-def send_email(reply_dict):
+def send_email(reply_dict: ReplyData):
     try:
-        subject, content = stripper(reply_dict["email"])
-        mail_sender(reply_dict["email_address"], subject, content)
+        subject, content = stripper(reply_dict.email)
+        mail_sender(reply_dict.email_address, subject, content)
         return {"message": "Email sent successfully"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
