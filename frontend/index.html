@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>HTTP POST Request Example</title>
+  <style>
+    .container {
+      display: flex;
+    }
+
+    .input-container {
+      flex: 1;
+      margin-right: 20px;
+    }
+
+    .response-container {
+      flex: 1;
+    }
+  </style>
+  <script>
+    function sendPostRequest() {
+      var email = document.getElementById("email").value;
+      var context = document.getElementById("context").value;
+      var product = document.getElementById("product").value;
+      var exampleEmails = document.getElementById("exampleEmails").value;
+
+      var data = {
+        "email_address": email,
+        "context": context,
+        "sell_product": product,
+        "example_emails": exampleEmails
+      };
+
+      fetch("http://127.0.0.1:8000/sales/generate", {
+        method: "POST",
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      })
+      .then(response => response.json())
+      .then(responseData => {
+        var responseContainer = document.getElementById("responseContainer");
+        var responseTextarea = document.createElement("textarea");
+        responseTextarea.rows = "10";
+        responseTextarea.cols = "40";
+        responseTextarea.value = JSON.stringify(responseData, null, 2);
+        responseContainer.innerHTML = "<h2>Response:</h2>";
+        responseContainer.appendChild(responseTextarea);
+      })
+      .catch(error => {
+        console.error("Error:", error);
+      });
+    }
+  </script>
+</head>
+<body>
+  <h1>HTTP POST Request Example</h1>
+
+  <div class="container">
+    <div class="input-container">
+      <label for="email">Email Address:</label><br>
+      <textarea id="email" rows="4" cols="40" required></textarea><br>
+
+      <label for="context">Context:</label><br>
+      <textarea id="context" rows="4" cols="40" required></textarea><br>
+
+      <label for="product">Product Description:</label><br>
+      <textarea id="product" rows="4" cols="40" required></textarea><br>
+
+      <label for="exampleEmails">Example Emails:</label><br>
+      <textarea id="exampleEmails" rows="4" cols="40" required></textarea><br>
+
+      <button onclick="sendPostRequest()">Submit</button>
+    </div>
+
+    <div class="response-container" id="responseContainer">
+      <h2>Response:</h2>
+    </div>
+  </div>
+</body>
+</html>

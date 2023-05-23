@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Enoki</title>
+  <style>
+    .container {
+      display: flex;
+    }
+
+    .input-container {
+      flex: 1;
+      margin-right: 20px;
+    }
+
+    .response-container {
+      flex: 1;
+    }
+
+    .feedback-container {
+      display: none;
+    }
+  </style>
+  <script>
+    function sendPostRequest() {
+      var email = document.getElementById("email").value;
+      var context = document.getElementById("context").value;
+      var product = document.getElementById("product").value;
+      var exampleEmails = document.getElementById("exampleEmails").value;
+
+      var data = {
+        "email_address": email,
+        "context": context,
+        "sell_product": product,
+        "example_emails": exampleEmails
+      };
+
+      fetch("http://127.0.0.1:8000/sales/generate", {
+        method: "POST",
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      })
+      .then(response => response.json())
+      .then(responseData => {
+        var responseContainer = document.getElementById("responseContainer");
+        var emailParagraph = document.createElement("p");
+        emailParagraph.innerText = "Email: " + responseData.email_address;
+        responseContainer.innerHTML = "<h2>Response:</h2>";
+        responseContainer.appendChild(emailParagraph);
+
+        var emailTextarea = document.createElement("textarea");
+        emailTextarea.id = "emailTextarea";
+        emailTextarea.rows = "20";
+        emailTextarea.cols = "100";
+        emailTextarea.value = responseData.email;
+        responseContainer.appendChild(emailTextarea);
+
+        var approveButton = document.createElement("button");
+        approveButton.innerText = "Approve";
+        approveButton.addEventListener("click", function() {
+          sendApproveRequest(emailTextarea.value, responseData.email_address);
+        });
+        responseContainer.appendChild(approveButton);
+
+        var feedbackButton = document.createElement("button");
+        feedbackButton.innerText = "Feedback";
+        feedbackButton.addEventListener("click", function() {
+          showFeedbackTextarea(emailTextarea.value, responseData.email_address);
+        });
+        responseContainer.appendChild(feedbackButton);
+      })
+      .catch(error => {
+        console.error("Error:", error);
+      });
+    }
+
+    function sendApproveRequest(email, emailAddress) {
+      var data = {
+        "email": email,
+        "email_address": emailAddress
+      };
+
+      fetch("http://127.0.0.1:8000/sales/send", {
+        method: "POST",
+        headers: {
+          "Accept": "application/json",
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(data)
+      })
+      .then(response => response.json())
+      .then(responseData => {
+        console.log("Approve Request Sent:", responseData);
+      })
+      .catch(error => {
+        console.error("Error:", error);
+      });
+    }
+
+    function showFeedbackTextarea(email, emailAddress) {
+      var feedbackContainer = document.getElementById("feedbackContainer");
+      var feedbackLabel = document.createElement("label");
+      feedbackLabel.innerText = "Feedback:";
+      feedbackContainer.innerHTML = "";
+      feedbackContainer.appendChild(feedbackLabel);
+
+      var feedbackTextarea = document.createElement("textarea");
+      feedbackTextarea.id = "feedbackTextarea";
+      feedbackTextarea.rows = "4";
+      feedbackTextarea.cols = "40";
+      feedbackContainer.appendChild(feedbackTextarea);
+
+      var submitButton = document.createElement("button");
+      submitButton.innerText = "Submit";
+      submitButton.addEventListener("click", function() {
+        var feedback = document.getElementById("feedbackTextarea").value;
+        var emailTextarea = document.getElementById("emailTextarea").value;
+        sendFeedbackRequest(emailAddress, emailTextarea, feedback);
+      });
+      feedbackContainer.appendChild(submitButton);
+
+      feedbackContainer.style.display = "block";
+    }
+
+    function sendFeedbackRequest(emailAddress, originalResponse, feedback) {
+        var data = {
+            "email_address": emailAddress,
+            "original_response": originalResponse,
+            "feedback": feedback
+        };
+
+        fetch("http://127.0.0.1:8000/sales/iterate", {
+            method: "POST",
+            headers: {
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(responseData => {
+            console.log("Feedback Sent:", responseData);
+            var emailTextarea = document.getElementById("emailTextarea");
+            if (emailTextarea) {
+            emailTextarea.value = responseData.email;
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+        });
+    }
+  </script>
+</head>
+<body>
+  <h1>Enoki</h1>
+
+  <div class="container">
+    <div class="input-container">
+      <label for="email">Email Address:</label><br>
+      <textarea id="email" rows="4" cols="40" required></textarea><br>
+
+      <label for="context">Context:</label><br>
+      <textarea id="context" rows="4" cols="40" required></textarea><br>
+
+      <label for="product">Product Description:</label><br>
+      <textarea id="product" rows="4" cols="40" required></textarea><br>
+
+      <label for="exampleEmails">Example Emails:</label><br>
+      <textarea id="exampleEmails" rows="4" cols="40" required></textarea><br>
+
+      <button onclick="sendPostRequest()">Submit</button>
+    </div>
+
+    <div class="response-container" id="responseContainer">
+      <h2>Response:</h2>
+    </div>
+  </div>
+
+  <div class="feedback-container" id="feedbackContainer">
+  </div>
+</body>
+</html>

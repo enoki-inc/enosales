@@ -9,8 +9,18 @@ import base64
 import os
 from requests import HTTPError
 from time import sleep
+from starlette.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Replace "*" with the origin of your HTML page
+    allow_methods=["POST"],
+    allow_headers=["*"],
+)
+
 
 class EmailRequest(BaseModel):
     recipient: str
